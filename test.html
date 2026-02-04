@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>test</title>
+
+  <script src="main.js" defer></script>
+
+  <style>
+    body{
+      font-family: Arial, Helvetica, sans-serif;
+      margin: 20px;
+      background: #f6f7fb;
+      color: #222;
+    }
+
+    .container{ max-width: 900px; margin: 0 auto; }
+    h2{ margin: 14px 0 8px; }
+
+    .box{
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    table{
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border: 1px solid #e1e1e1;
+    }
+
+    th, td{
+      padding: 14px 12px;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+    }
+
+    th{
+      background: #fafafa;
+      font-size: 13px;
+      color: #444;
+      letter-spacing: 0.5px;
+    }
+
+    /* Deleted: gạch ngang toàn bộ cell TRỪ cell action */
+    tr.deleted td:not(.action-cell){
+      text-decoration: line-through;
+      color: #9a9a9a;
+      font-style: italic;
+    }
+
+    tr:hover td{ background: #fcfcff; }
+
+    .status{ width: 120px; }
+    .action-cell{ text-align: right; width: 180px; }
+
+    .btn-soft{
+      padding: 10px 18px;
+      border: 1px solid #d84a3a;
+      background: #e24b3a;
+      color: #fff;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .btn-soft:hover{ background: #d94435; }
+
+    .btn-restore{
+      padding: 10px 18px;
+      border: 1px solid #2f8f4a;
+      background: #35a853;
+      color: #fff;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .btn-restore:hover{ background: #2f944a; }
+
+    .btn-main{
+      padding: 8px 12px;
+      border: 1px solid #2f6fed;
+      background: #3b82f6;
+      color: #fff;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .btn-main:hover{ background: #2f6fed; }
+
+    .btn-clear{
+      padding: 8px 12px;
+      border: 1px solid #bbb;
+      background: #f3f3f3;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .btn-clear:hover{ background: #e9e9e9; }
+
+    .actions button{
+      padding: 6px 10px;
+      border: 1px solid #ccc;
+      background: #f7f7f7;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-right: 6px;
+      font-weight: 600;
+    }
+    .actions button:hover{ background: #eee; }
+    .actions .danger{
+      border-color: #e07a7a;
+      background: #ffecec;
+    }
+
+    .form-row{
+      display: grid;
+      grid-template-columns: 1fr 2fr 1fr auto;
+      gap: 10px;
+      align-items: center;
+      margin-top: 12px;
+    }
+
+    @media (max-width: 700px){
+      .form-row{ grid-template-columns: 1fr; }
+    }
+
+    input{
+      padding: 8px 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      width: 100%;
+      background: #fff;
+    }
+
+    .row-actions{
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .hint{
+      font-size: 12px;
+      color: #666;
+      margin-top: 8px;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <!-- POSTS -->
+    <div class="box">
+      <h2>Posts</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:70px;">ID</th>
+            <th>TITLE</th>
+            <th style="width:90px;">VIEWS</th>
+            <th class="status">STATUS</th>
+            <th class="action-cell">ACTION</th>
+          </tr>
+        </thead>
+        <tbody id="body_table_posts"></tbody>
+      </table>
+
+      <div class="form-row">
+        <input type="text" id="id_txt" placeholder="ID (để trống khi tạo mới)" />
+        <input type="text" id="title_txt" placeholder="Title" />
+        <input type="text" id="view_txt" placeholder="Views" />
+
+        <div class="row-actions">
+          <button class="btn-main" onclick="SavePost()">Save Post</button>
+          <button class="btn-clear" onclick="ClearPostForm()">Clear</button>
+        </div>
+      </div>
+
+      <div class="hint">
+        • Tạo mới: để trống ID → tự tăng maxId + 1 (ID lưu chuỗi).<br/>
+        • Soft Delete: isDeleted=true. Restore: isDeleted=false.
+      </div>
+    </div>
+
+    <!-- COMMENTS -->
+    <div class="box">
+      <h2>Comments</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:70px;">ID</th>
+            <th>TEXT</th>
+            <th style="width:90px;">POST ID</th>
+            <th style="width:220px;">ACTIONS</th>
+          </tr>
+        </thead>
+        <tbody id="body_table_comments"></tbody>
+      </table>
+
+      <div class="form-row">
+        <input type="text" id="comment_id_txt" placeholder="ID (để trống khi tạo mới)" />
+        <input type="text" id="comment_text_txt" placeholder="Comment text" />
+        <input type="text" id="comment_postId_txt" placeholder="Post ID" />
+
+        <div class="row-actions">
+          <button class="btn-main" onclick="SaveComment()">Save Comment</button>
+          <button class="btn-clear" onclick="ClearCommentForm()">Clear</button>
+        </div>
+      </div>
+
+      <div class="hint">
+        • Comments CRUD đầy đủ. PostID nhập tay (VD: 1, 2, 3...).
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
